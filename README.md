@@ -1,5 +1,3 @@
-# unified_land_river_mesh
-
 # Liao. et al. 2026 Journal of Advances in Modeling Earth Systems
 
 **A Global Scale Unified Mesh Framework for Earthe System Models**
