@@ -33,7 +33,7 @@ sDate_today = datetime.now().strftime('%Y%m%d')
 sDate_today = '20251208'  #use a fixed date for easy repeatability
 
 #Step 0 set up the resolution
-iCase_index = 2
+iCase_index = 3
 
 #resolution settings
 #for rivers and watershed
