@@ -199,3 +199,5 @@ cython_debug/
 *.geojson
 *.geoparquet
 *.parquet
+*.mp4
+core.*

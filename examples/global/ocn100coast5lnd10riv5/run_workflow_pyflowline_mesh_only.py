@@ -84,7 +84,8 @@ ncolumn = int(360 / dResolution_x_in)
 
 #string format for file names
 #river first
-dDistance_tolerance = dResolution_land * 1.0E3 #how far away two river need to be for mesh generation
+
+dDistance_tolerance = dResolution_river_network * 1.0E3 #how far away two river need to be for mesh generation
 
 sDistance_tolerance = "{:.2E}".format(dDistance_tolerance)
 sDrainage_area_threshold = "{:.2E}".format(dDrainage_area_threshold) # m2

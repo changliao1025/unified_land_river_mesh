@@ -40,7 +40,6 @@ from pyearth.visual.map.map_servers import Stadia_terrain_images, Esri_terrain_i
 
 
 #step 1, convert the global mesh to a geojson file
-
 sFilename_geojson_base = '/compyfs/liao313/04model/pyhexwatershed/northamerica/pyflowline20250702011/jigsaw/out/base_mesh.geojson'
 
 from pyearth.gis.gdal.read.vector.gdal_get_vector_extent import gdal_get_vector_extent

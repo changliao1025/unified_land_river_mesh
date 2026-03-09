@@ -154,8 +154,6 @@ else:
             change_json_key_value(sFilename_configuration_basin_json, 'iFlag_debug', 1, iFlag_basin_in=1, iBasin_index_in=i-1)
 
 
-
-
 if iFlag_process_watershed_boundary ==1:
     for i in range(1, nOutlet_largest+1):
         sBasin_id  = f'{i:04d}'

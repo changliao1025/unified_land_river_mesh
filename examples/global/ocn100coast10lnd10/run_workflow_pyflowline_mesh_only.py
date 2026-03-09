@@ -29,10 +29,10 @@ sDate_today = datetime.now().strftime('%Y%m%d')
 #things that may need to be changed for different runs
 
 #date time
-sDate_today = '20251122'  #use a fixed date for easy repeatability
+sDate_today = '20260101'  #use a fixed date for easy repeatability
 
 #index for different runs
-iCase_index = 3
+iCase_index = 1
 
 #resolution settings
 #for rivers and watershed
@@ -52,7 +52,7 @@ iFlag_process_watershed_boundary = 0
 iFlag_process_coastline = 0
 
 #number of largest outlet to be processed
-nOutlet_largest = 5
+nOutlet_largest = 50
 
 #thing may not need to be changed
 sWorkspace_input = '/qfs/people/liao313/workspace/python/unified_land_river_mesh/data/global/input'
@@ -121,6 +121,8 @@ sFilename_pyflowline_configuration = os.path.join(sWorkspace_river_network_outpu
 sFilename_pyflowline_configuration_basins = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration_basins.json')
 
 
+
+
 if iFlag_simplify_hydrosheds_river_network == 1:
     simplify_hydrorivers_networks(sFilename_flowline_hydrosheds_in,
                        sFilename_flowline_hydrosheds_out,
@@ -129,25 +131,25 @@ if iFlag_simplify_hydrosheds_river_network == 1:
                         iFlag_pyflowline_configuration_in=1,
                         nOutlet_largest=nOutlet_largest)
 else:
-    iFlag_reprocess_config = 0
+    iFlag_reprocess_config = 1
     if iFlag_reprocess_config == 1:
         #if flowline is pre-processed, we just need to create the configuration file
-        sFilename_configuration_json = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration.json')
-        create_pyflowline_template_configuration_file(sFilename_configuration_json,
+        #sFilename_pyflowline_configuration = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration.json')
+        create_pyflowline_template_configuration_file(sFilename_pyflowline_configuration,
                 sWorkspace_river_network_output = sWorkspace_river_network_output,
                 iFlag_standalone_in=1,
                 nOutlet = nOutlet_largest,
                 sMesh_type_in='mpas',
                 sModel_in='pyflowline')
-        sFilename_configuration_basin_json = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration_basins.json')
+
         for i in range(1, nOutlet_largest+1):
             sBasin_id = '{:04d}'.format(i)
             sFilename_flowline_simplified_basin = os.path.join(sWorkspace_river_network_output, 'HydroRIVERS_v10_simplified_' + sDistance_tolerance + '_' + sDrainage_area_threshold +'_'+ sBasin_id + '.geojson')
             #read the geojson file using gdal to get the outlet location, which is the end point of the first feature
             dLongitude_outlet, dLatitude_outlet = get_outlet_location(sFilename_flowline_simplified_basin)
-            change_json_key_value(sFilename_configuration_basin_json, 'dLatitude_outlet_degree', dLatitude_outlet, iFlag_basin_in=1, iBasin_index_in=i-1)
-            change_json_key_value(sFilename_configuration_basin_json, 'dLongitude_outlet_degree', dLongitude_outlet, iFlag_basin_in=1, iBasin_index_in=i-1)
-            change_json_key_value(sFilename_configuration_basin_json, 'sFilename_flowline_filter', sFilename_flowline_simplified_basin, iFlag_basin_in=1, iBasin_index_in=i-1)
+            change_json_key_value(sFilename_pyflowline_configuration_basins, 'dLatitude_outlet_degree', dLatitude_outlet, iFlag_basin_in=1, iBasin_index_in=i-1)
+            change_json_key_value(sFilename_pyflowline_configuration_basins, 'dLongitude_outlet_degree', dLongitude_outlet, iFlag_basin_in=1, iBasin_index_in=i-1)
+            change_json_key_value(sFilename_pyflowline_configuration_basins, 'sFilename_flowline_filter', sFilename_flowline_simplified_basin, iFlag_basin_in=1, iBasin_index_in=i-1)
 
 if iFlag_process_watershed_boundary ==1:
     for i in range(1, nOutlet_largest+1):
@@ -161,16 +163,16 @@ if iFlag_process_watershed_boundary ==1:
         if wkt is not None:
             sFilename_out = os.path.join(sWorkspace_watershed_boundary_output, f"watershed_boundary_{sDistance_tolerance}_{sDrainage_area_threshold}_{sBasin_id}.geojson")
             gdal_write_wkt_to_vector_file(wkt, sFilename_out)
-            change_json_key_value(sFilename_configuration_basin_json, 'sFilename_watershed_boundary', sFilename_out, iFlag_basin_in=1, iBasin_index_in=i-1)
+            change_json_key_value(sFilename_pyflowline_configuration_basins, 'sFilename_watershed_boundary', sFilename_out, iFlag_basin_in=1, iBasin_index_in=i-1)
 
 else:
     #only need to update the basin boundary file path in the configuration file
-    sFilename_configuration_json = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration.json')
-    sFilename_configuration_basin_json = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration_basins.json')
+    sFilename_pyflowline_configuration = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration.json')
+    sFilename_pyflowline_configuration_basins = os.path.join(sWorkspace_river_network_output, 'pyflowline_configuration_basins.json')
     for i in range(1, nOutlet_largest+1):
         sBasin_id = '{:04d}'.format(i)
         sFilename_watershed_boundary_basin = os.path.join(sWorkspace_watershed_boundary_output, f"watershed_boundary_{sDistance_tolerance}_{sDrainage_area_threshold}_{sBasin_id}.geojson")
-        change_json_key_value(sFilename_configuration_basin_json, 'sFilename_watershed_boundary', sFilename_watershed_boundary_basin, iFlag_basin_in=1, iBasin_index_in=i-1)
+        change_json_key_value(sFilename_pyflowline_configuration_basins, 'sFilename_watershed_boundary', sFilename_watershed_boundary_basin, iFlag_basin_in=1, iBasin_index_in=i-1)
     pass
 
 
@@ -232,12 +234,12 @@ if iFlag_debug == 1:
     change_json_key_value(sFilename_configuration_copy, "iFlag_simplification", 0) #disable the flowline simplification
     change_json_key_value(sFilename_configuration_copy, "iFlag_create_mesh", 1)
     change_json_key_value(sFilename_configuration_copy, "iFlag_global", 1)
-    change_json_key_value(sFilename_configuration_copy, "iFlag_run_jigsaw", 0) #turn off the jigsaw mesh generation
+    change_json_key_value(sFilename_configuration_copy, "iFlag_run_jigsaw", 1) #turn off the jigsaw mesh generation
     change_json_key_value(sFilename_configuration_copy, "iFlag_intersect", 0) #turn off the intersection
     #change_json_key_value(sFilename_configuration_copy, "sFilename_mesh_boundary", sFilename_vector_geojson_merged) #set the target mesh boundary
     change_json_key_value(sFilename_configuration_copy, "sFilename_coastline_boundary", sFilename_vector_coastline_merged) #set the coastline boundary
     change_json_key_value(sFilename_configuration_copy, "sFilename_jigsaw_configuration", sFilename_jigsaw_configuration_copy)
-    change_json_key_value(sFilename_configuration_copy, "sFilename_mpas_mesh_netcdf", sFilename_mpas_mesh_netcdf) #set the target mesh boundary
+    #change_json_key_value(sFilename_configuration_copy, "sFilename_mpas_mesh_netcdf", sFilename_mpas_mesh_netcdf) #set the target mesh boundary
     change_json_key_value(sFilename_configuration_copy, "iFlag_force_watershed_boundary", 1) #turn on the intersection
     change_json_key_value(sFilename_configuration_copy, "sFilename_basins", sFilename_configuration_basins_copy) #set the river network
     #update basin configuration file below
