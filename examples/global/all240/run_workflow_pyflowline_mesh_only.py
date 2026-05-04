@@ -14,6 +14,7 @@ from pyearth.gis.gdal.write.vector.gdal_write_wkt_to_vector_file import gdal_wri
 from pyearth.toolbox.management.vector.merge_features import merge_features
 from pyearth.toolbox.analysis.image.raster_process import create_raster_buffer_zone, fix_raster_antimeridian_issue
 from hexwatershed_utility.preprocess.features.rivers.simplify_hydrorivers_networks import simplify_hydrorivers_networks
+from pyearth.toolbox.conversion.convert_vector_to_global_raster import convert_vector_to_global_raster
 from hexwatershed_utility.preprocess.features.rivers.tag_river_outlet import tag_river_outlet
 from hexwatershed_utility.preprocess.features.watershed_boundary.find_minimal_hydrobasins_watershed_boundary import find_minimal_hydrobasins_watershed_boundary
 from hexwatershed_utility.preprocess.features.rivers.get_outlet_location import get_outlet_location
@@ -161,6 +162,8 @@ else:
 
 sFilename_flowline_hydrosheds_outlet = os.path.join(sWorkspace_river_network_output, sFilename_flowline_hydroshed_outlet)
 
+convert_vector_to_global_raster(sFilename_flowline_hydrosheds_out, sFilename_river_network_raster,
+                                         dResolution_x_in, dResolution_y_in )
 sFilename_river_network_raster_mouth_tagged = os.path.join(sWorkspace_river_network_output, 'river_network_raster_mouth_tagged.tif')
 if iFlag_flexible_river_mouth == 1:
     sFilename_flowline_outlet_for_tag = sFilename_flowline_hydrosheds_outlet

@@ -35,7 +35,7 @@ sDate_today = datetime.now().strftime('%Y%m%d')
 sDate_today = '20260302'  #use a fixed date for easy repeatability
 
 #index for different runs
-iCase_index = 4
+iCase_index = 6
 
 #resolution settings
 #for rivers and watershed
@@ -216,12 +216,10 @@ if iFlag_process_coastline == 1:
     sFilename_tif_wo_island, sFilename_vector_coastline = create_land_ocean_mask_from_naturalearth(sWorkspace_coastline_output,
                                                                              dResolution_x_in, dResolution_y_in,
                                                                              dThreshold_area_island,
-                                                                             dResolution_coastline_buffer)
+                                                                             dResolution_coastline_buffer,
+                                                                             iRaster_buffer_pixel=2)
 
-    #add a buffer zone to the coastline so it would gurantee ocean stability
 
-    create_raster_buffer_zone(sFilename_tif_wo_island, sFilename_tif_wo_island_buffered, 1, 1)
-    fix_raster_antimeridian_issue(sFilename_tif_wo_island_buffered, sFilename_tif_wo_island_buffered_fixed, 2)
     ##we need to fix the incompatibilty between hydrosheds and naturalearth
     aFilename_flowline = list()
     for i in range(1, nOutlet_largest+1):
@@ -235,8 +233,15 @@ if iFlag_process_coastline == 1:
     merge_features(sFilename_vector_coastline_updated, sFilename_vector_coastline_merged, iFlag_force= True)
     add_field_to_vector_file(sFilename_vector_coastline_merged, aField, aValue)
 else:
-    create_raster_buffer_zone(sFilename_tif_wo_island, sFilename_tif_wo_island_buffered, 1, 1)
-    fix_raster_antimeridian_issue(sFilename_tif_wo_island_buffered, sFilename_tif_wo_island_buffered_fixed, 2)
+    sFilename_wo_island = os.path.join(sWorkspace_coastline_output, 'land_ocean_mask_wo_island.geojson')
+    convert_vector_to_global_raster(sFilename_wo_island,
+                                    sFilename_tif_wo_island,
+                                    dResolution_x_in,
+                                    dResolution_y_in,
+                                    iFlag_boundary_only_in = 0,
+                                    dFill_value_in = 2)
+    create_raster_buffer_zone(sFilename_tif_wo_island, sFilename_tif_wo_island_buffered, 1, 2)
+    fix_raster_antimeridian_issue(sFilename_tif_wo_island_buffered, sFilename_tif_wo_island_buffered_fixed,1, 2, iRaster_buffer_pixel=2)
 
 sFilename_tif_wo_island = sFilename_tif_wo_island_buffered_fixed
 
