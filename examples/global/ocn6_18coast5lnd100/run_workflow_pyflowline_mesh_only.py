@@ -12,7 +12,7 @@ from shutil import copy2
 from pyearth.toolbox.management.vector.fields import get_field_and_value, add_field_to_vector_file
 from pyearth.gis.gdal.write.vector.gdal_write_wkt_to_vector_file import gdal_write_wkt_to_vector_file
 from pyearth.toolbox.management.vector.merge_features import merge_features
-from hexwatershed_utility.preprocess.features.rivers.simplify_hydrorivers_networks import simplify_hydrorivers_networks
+from hexwatershed_utility.preprocess.feature.river.simplify_hydrorivers_network import simplify_hydrorivers_network
 from hexwatershed_utility.preprocess.features.watershed_boundary.find_minimal_hydrobasins_watershed_boundary import find_minimal_hydrobasins_watershed_boundary
 from hexwatershed_utility.preprocess.features.rivers.get_outlet_location import get_outlet_location
 from hexwatershed_utility.preprocess.features.coastline.create_land_ocean_mask_from_hydrobasin import create_land_ocean_mask_from_hydrobasin
@@ -121,7 +121,7 @@ sFilename_pyflowline_configuration_basins = os.path.join(sWorkspace_river_networ
 
 
 if iFlag_simplify_hydrosheds_river_network == 1:
-    simplify_hydrorivers_networks(sFilename_flowline_hydrosheds_in,
+    simplify_hydrorivers_network(sFilename_flowline_hydrosheds_in,
                        sFilename_flowline_hydrosheds_out,
                        dDistance_tolerance,
                         dDrainage_area_threshold,
